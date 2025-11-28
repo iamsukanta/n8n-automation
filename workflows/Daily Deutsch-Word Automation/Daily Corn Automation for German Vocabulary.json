@@ -1,0 +1,164 @@
+{
+  "name": "Daily Corn Automation for German Vocub",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "632f2121-6bb0-4c21-83d5-d13650b17a17",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LNtM80LbrgcZS4lPs2meEqwOepHI3fB8t0fRPTLN7i4",
+          "mode": "list",
+          "cachedResultName": "German Vocub Learner",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LNtM80LbrgcZS4lPs2meEqwOepHI3fB8t0fRPTLN7i4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "deutsch_learner",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LNtM80LbrgcZS4lPs2meEqwOepHI3fB8t0fRPTLN7i4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4b973d2c-914b-486c-bed0-4b6f113e67b5",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ShjUSulcI1ECaYkT",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Generate 10 new {{ $json['Vocub Lebel'] }} level German words with their meanings, articles, and example sentences. Example and meaning should be ttheir own language {{ $json.Language }} as well as German."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "instructions": "=You are a German language teacher specializing in {{ $json['Vocub Lebel'] }} level vocabulary instruction.\n\nYour task is to:\n1. Generate exactly 10 new {{ $json['Vocub Lebel'] }} level German words that are useful for intermediate learners\n2. For each word, provide:\n   - The German word\n   - The article (der/die/das)\n   - {{ $json.Language }} translation/meaning\n   - A simple example sentence in German\n   - {{ $json.Language }} translation of the example sentence\n3. Format the output as a well-structured HTML email that is easy to read\n4. Use proper HTML formatting with headings, lists, and styling\n5. Make the email visually appealing and educational\n6. Number each word from 1 to 10\n\nReturn ONLY the complete proper HTML content for the email body. Don't send extra html tag that cannot parse for email body."
+        }
+      },
+      "id": "0cc50e68-827e-4166-8212-6ee64ef19f37",
+      "name": "Generate German Vocabulary",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        432,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "K3ClDgnIY3Alud37",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get row(s) in sheet').item.json.Email }}",
+        "subject": "Daily German Vocub Feed",
+        "message": "={{ $json.output[0].content[0].text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        800,
+        0
+      ],
+      "id": "4d972dc0-40ad-4209-bdca-2fe3fb60988c",
+      "name": "Send a message",
+      "webhookId": "a4a58233-5be0-4c24-afb8-2ab8e33d4360",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "J0LTiZvUoyVkIzLK",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Generate German Vocabulary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate German Vocabulary": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "07b16dc6-da40-48a7-b4c0-4202ed0c4ed0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2dd9b722cc1047b475a8693cd3ffac674d0ca13d82b0aaa447bb3fc294938d7a"
+  },
+  "id": "A0OqIXyli4y0BS1t",
+  "tags": []
+}
