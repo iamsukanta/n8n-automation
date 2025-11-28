@@ -1,0 +1,316 @@
+{
+  "name": "Language Automation Form",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Language Registration Form",
+        "formDescription": "Want to receive daily german vocabulary list with meaning and sentence. Please join with this form.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Enter your name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "placeholder": "Enter your gmail",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Vocabulary lebel",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "A1"
+                  },
+                  {
+                    "option": "A2"
+                  },
+                  {
+                    "option": "B1"
+                  },
+                  {
+                    "option": "B2"
+                  },
+                  {
+                    "option": "C1"
+                  },
+                  {
+                    "option": "C2"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Select Your Language",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "English"
+                  },
+                  {
+                    "option": "Bengali"
+                  },
+                  {
+                    "option": "Hindi"
+                  },
+                  {
+                    "option": "Arabic"
+                  },
+                  {
+                    "option": "Spanish"
+                  },
+                  {
+                    "option": "French"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "851e878f-15fd-4462-ae62-7157e833fd5f",
+      "name": "On form submission",
+      "webhookId": "186beb3f-30b6-461b-a5f5-66bcb48cd0f8"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1LNtM80LbrgcZS4lPs2meEqwOepHI3fB8t0fRPTLN7i4",
+          "mode": "list",
+          "cachedResultName": "German Vocub Learner",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LNtM80LbrgcZS4lPs2meEqwOepHI3fB8t0fRPTLN7i4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "deutsch_learner",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LNtM80LbrgcZS4lPs2meEqwOepHI3fB8t0fRPTLN7i4/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "Email": "={{ $json.Email }}",
+            "Vocub Lebel": "={{ $json['Vocabulary lebel'] }}",
+            "Language": "={{ $json['Select Your Language'] }}",
+            "Created Date": "={{ $json.submittedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Vocub Lebel",
+              "displayName": "Vocub Lebel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Language",
+              "displayName": "Language",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Created Date",
+              "displayName": "Created Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6927cdd6-0610-45e8-8634-b148fdef0314",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "dmVRKAXDK0ckl63X",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Generate 10 new {{ $json['Vocub Lebel'] }} level German words with their meanings, articles, and example sentences. Example and meaning should be ttheir own language {{ $json.Language }} as well as German."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "instructions": "=You are a German language teacher specializing in {{ $json['Vocub Lebel'] }} level vocabulary instruction.\n\nYour task is to:\n1. Generate exactly 10 new {{ $json['Vocub Lebel'] }} level German words that are useful for intermediate learners\n2. For each word, provide:\n   - The German word\n   - The article (der/die/das)\n   - {{ $json.Language }} translation/meaning\n   - A simple example sentence in German\n   - {{ $json.Language }} translation of the example sentence\n3. Format the output as a well-structured HTML email that is easy to read\n4. Use proper HTML formatting with headings, lists, and styling\n5. Make the email visually appealing and educational\n6. Number each word from 1 to 10\n\nReturn ONLY the complete proper HTML content for the email body. Don't send extra html tag that cannot parse for email body."
+        }
+      },
+      "id": "21b11285-091b-4783-a1bd-42349afe731d",
+      "name": "Generate German Vocabulary",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [
+        384,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "HHipuILVV7aGoW58",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Append row in sheet').item.json.Email }}",
+        "subject": "Language Learning word",
+        "message": "={{ $json.output[0].content[0].text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        0
+      ],
+      "id": "e3066168-5d2c-4b74-aa3d-326c22d5c26a",
+      "name": "Send a message",
+      "webhookId": "a4a58233-5be0-4c24-afb8-2ab8e33d4360",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "UXFCcMabL5JCHyN1",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Name": "Sukanta Bala",
+          "Email": "sukantabala1992@gmail.com",
+          "Vocabulary lebel": "B2",
+          "Select Your Language": "English",
+          "submittedAt": "2025-11-28T00:23:43.310+01:00",
+          "formMode": "test"
+        }
+      }
+    ],
+    "Append row in sheet": [
+      {
+        "json": {
+          "Name": "Sukanta Bala",
+          "Email": "sukantabala1992@gmail.com",
+          "Vocub Lebel": "B2",
+          "Language": "English",
+          "Created Date": "2025-11-28T00:23:43.310+01:00"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Generate German Vocabulary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate German Vocabulary": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3269a68b-1f53-4b68-8b1a-9a69b9766a4b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2dd9b722cc1047b475a8693cd3ffac674d0ca13d82b0aaa447bb3fc294938d7a"
+  },
+  "id": "qrRbVeYbc7T4qzLC",
+  "tags": []
+}
